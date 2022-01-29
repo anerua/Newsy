@@ -24,8 +24,10 @@ def get_topstories(request):
     items_list = items.split(",")
 
     news_list = []
-    for item_id in items_list[0:20]:
-        news_list.append((get_item(item_id)))
+    for item_id in items_list[0:30]:
+        item = get_item(item_id)
+        if item:
+            news_list.append((get_item(item_id)))
 
     return render(request, "newsyapp/index.html", {"news_list": news_list})
 
@@ -42,6 +44,9 @@ def get_item(item_id):
     data = res.read()
 
     item = json.loads(data.decode("utf-8"))
+
+    if item["type"] not in ["job", "story"]:
+        return False
 
     item_time = int(item["time"])
     elapsed_time = get_elapsed_time(item_time)
