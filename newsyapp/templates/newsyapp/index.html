@@ -12,16 +12,17 @@
         <hr><hr><hr><hr>
 
         <ol>
-            {% for news in news_list %}
+            {% for story in stories %}
             <li>
                 <hr>
-                    <p>{{ news.id }}</p>
-                    {% if "url" in news %}
-                        <h3><a href="{{ news.url }}", target="blank">{{ news.title }}</a></h3>  
+                    <p>{{ story.id }}</p>
+                    {% if story.url %}
+                        <h3><a href="{{ story.url }}", target="blank">{{ story.title }}</a></h3>  
                     {% else %}
-                        <h3>{{ news.title }}</h3>
+                        <h3>{{ story.title }}</h3>
                     {% endif %}
-                    <p>{{ news.time }}</p>
+                    <p>{{ story.time }}</p>
+                    <p>Posted by {{ story.by }}</p>
                 <hr>
             </li>
             {% endfor %}
