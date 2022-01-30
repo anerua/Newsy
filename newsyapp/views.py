@@ -14,6 +14,13 @@ def get_stories(request):
     return render(request, "newsyapp/index.html", {"stories": stories})
 
 
+def get_jobs(request):
+
+    jobs = Job.objects.all()
+
+    return render(request, "newsyapp/jobs.html", {"jobs": jobs})
+
+
 def get_item(item_id):
 
     conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
@@ -111,8 +118,9 @@ def sync_db(request):
     
     items_list = items.split(",")
 
-    added_no = 0
-    for item_id in items_list[:50]:
+    added_stories = 0
+    added_jobs = 0
+    for item_id in items_list:
         if item_exists(item_id, Story):
             continue
         if item_exists(item_id, Job):
@@ -130,19 +138,19 @@ def sync_db(request):
                                     title=response["title"],
                                     url=response["url"])
                 new_story.save()
-                added_no += 1
+                added_stories += 1
             elif response["type"] == "job":
-                new_story = Job(id=response["id"],
+                new_job = Job(id=response["id"],
                                     by=response["by"],
                                     time=response["time"],
                                     text=response["text"],
                                     title=response["title"],
                                     url=response["url"])
-                new_story.save()
-                added_no += 1
+                new_job.save()
+                added_jobs += 1
             else:
                 print("How on Earth did you get here!!!")
-    return HttpResponse(f"Successfully added {added_no} new items to the database!")
+    return HttpResponse(f"Successfully added {added_stories} new stories and {added_jobs} new jobs to the database!")
 
 
 def item_exists(item_id, my_model):

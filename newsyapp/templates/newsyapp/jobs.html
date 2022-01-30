@@ -1,0 +1,33 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <title>Top Jobs in HN</title>
+    </head>
+
+    <body>
+        <h1>Newsy! Jobs</h1>
+        <hr><hr><hr><hr>
+
+        <ol>
+            {% for job in jobs %}
+            <li>
+                <hr>
+                    <p>{{ job.id }}</p>
+                    {% if job.url %}
+                        <h3><a href="{{ job.url }}", target="blank">{{ job.title }}</a></h3>  
+                    {% else %}
+                        <h3>{{ job.title }}</h3>
+                    {% endif %}
+                    {% if job.text %}
+                        <p>{{ job.text }}</p>
+                    {% endif %}
+                    <p>{{ job.time }}</p>
+                    <p>Posted by {{ job.by }}</p>
+                <hr>
+            </li>
+            {% endfor %}
+        </ol>        
+    </body>
+</html>
