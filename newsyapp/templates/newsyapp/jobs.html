@@ -1,33 +1,30 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="en">
+{% extends "newsyapp/layout.html" %}
 
-    <head>
-        <title>Top Jobs in HN</title>
-    </head>
+{% block title %}
+    Newsy! Top Jobs
+{% endblock %}
 
-    <body>
-        <h1>Newsy! Jobs</h1>
-        <hr><hr><hr><hr>
+{% block body %}
 
-        <ol>
-            {% for job in jobs %}
-            <li>
-                <hr>
-                    <p>{{ job.id }}</p>
-                    {% if job.url %}
-                        <h3><a href="{{ job.url }}", target="blank">{{ job.title }}</a></h3>  
-                    {% else %}
-                        <h3>{{ job.title }}</h3>
-                    {% endif %}
-                    {% if job.text %}
-                        <p>{{ job.text }}</p>
-                    {% endif %}
-                    <p>{{ job.time }}</p>
-                    <p>Posted by {{ job.by }}</p>
-                <hr>
-            </li>
-            {% endfor %}
-        </ol>        
-    </body>
-</html>
+    <h1>Newsy! Jobs</h1>
+    <hr><hr><hr><hr>
+
+    <ol>
+        {% for job in jobs %}
+        <li>
+            <hr>
+                <p>{{ job.id }}</p>
+                <h3><a href="{% url 'detail' job.id %}">{{ job.title }}</a></h3>
+                {% if job.url %}
+                    <p><a href="{{ job.url }}", target="blank">{{ job.url }}</a></p>
+                {% endif %}
+                {% if job.text %}
+                    <p>{{ job.text }}</p>
+                {% endif %}
+                <p>{{ job.time }}</p>
+                <p>Posted by {{ job.by }}</p>
+            <hr>
+        </li>
+        {% endfor %}
+    </ol>        
+{% endblock %}

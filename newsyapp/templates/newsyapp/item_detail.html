@@ -1,0 +1,46 @@
+{% extends "newsyapp/layout.html" %}
+
+{% block title %}
+    Newsy! {{ item.title }}
+{% endblock %}
+
+{% block body %}
+
+    <h1>{{ item.title }}</h1>
+    <br><br><br>
+
+    {% if item.by %}
+        Posted by {{ item.by }}. {{ item.time }}
+    {% else %}
+        Anonymous. {{ item.time }}
+    {% endif %}
+
+    {% if item.url %}
+        <h4>Details: <a href="{{ item.url }}", target="blank">{{ item.url }}</a></h4>
+    {% endif %}
+
+    {% if type == "Job" %}
+        {% if item.text %}
+            <p>{{ item.text }}</p>
+        {% endif %}
+    {% elif type == "Story" %}
+        {% if item.score %}
+            <p>Score: {{ item.score }}</p>
+        {% endif %}
+        <h3>Comments</h3>
+        <hr>
+        {% for comment in comments %}
+            <p>
+                {{ comment.by }} | {{ comment.time }}
+                <p>{{ comment.text }}</p>
+            </p>
+        {% empty %}
+
+        {% endfor %}
+    {% else %}
+
+    {% endif %}
+
+    <p></p>
+
+{% endblock %}

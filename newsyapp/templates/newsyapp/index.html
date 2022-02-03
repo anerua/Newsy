@@ -1,33 +1,28 @@
-{% load static %}
+{% extends "newsyapp/layout.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <title>Newsy Top Stories</title>
-    </head>
+{% block title %}
+    Newsy! Top Stories
+{% endblock %}
 
-    <body>
+{% block body %}
 
-        <h1>Newsy! Stories</h1>
-        <hr><hr><hr><hr>
+    <h1>Newsy! Stories</h1>
+    <hr><hr><hr><hr>
 
-        <ol>
-            {% for story in stories %}
-            <li>
-                <hr>
-                    <p>{{ story.id }}</p>
-                    {% if story.url %}
-                        <h3><a href="{{ story.url }}", target="blank">{{ story.title }}</a></h3>  
-                    {% else %}
-                        <h3>{{ story.title }}</h3>
-                    {% endif %}
-                    <p>{{ story.time }}</p>
-                    <p>Posted by {{ story.by }}</p>
-                <hr>
-            </li>
-            {% endfor %}
-        </ol>
+    <ol>
+        {% for story in stories %}
+        <li>
+            <hr>
+                <p>{{ story.id }}</p>
+                <h3><a href="{% url 'detail' story.id %}">{{ story.title }}</a></h3>  
+                {% if story.url %}
+                    <p><a href="{{ story.url }}", target="blank">{{ story.url }}</a></p>  
+                {% endif %}
+                <p>{{ story.time }}</p>
+                <p>Posted by {{ story.by }}</p>
+            <hr>
+        </li>
+        {% endfor %}
+    </ol>
 
-
-    </body>
-</html>
+{% endblock %}
