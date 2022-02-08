@@ -32,7 +32,7 @@
         {% for comment in comments %}
             <p>
                 {{ comment.by }} | {{ comment.time }}
-                <p>{{ comment.text }}</p>
+                <p>{{ comment.text | safe }}</p>
             </p>
         {% empty %}
 

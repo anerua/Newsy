@@ -33,8 +33,8 @@ def get_detail(request, item_id):
             })
         elif item and item_type == Story:
             comments = []
-            for comment_id in item.kids.all():
-                comments.append(get_comment(comment_id))
+            for comment in item.kids.all():
+                comments.append(comment)
             return render(request, "newsyapp/item_detail.html", {
                 "type": "Story",
                 "item": item,
@@ -125,18 +125,23 @@ def get_comment(item_id):
         data = res.read()
 
         item = json.loads(data.decode("utf-8"))
+        
 
-        kids = None
-        if "kids" in item:
-            kids = item["kids"]
         if item["type"] == "comment":
-            new_comment = Comment(id=item["id"],
-                                    by=item["by"],
-                                    time=item["time"],
-                                    parent=item["parent"],
-                                    kids=kids,
-                                    text=item["text"])
+            new_comment = Comment(id=item["id"])
+            if "by" in item and item["by"]:
+                new_comment.by = item["by"]
+            if "time" in item and item["time"]:
+                new_comment.time = item["time"]
+            if "parent" in item and item["parent"]:
+                new_comment.parent = item["parent"]
+            if "text" in item and item["text"]:
+                new_comment.text = item["text"]
             new_comment.save()
+            if "kids" in item and item["kids"]:
+                for kid_id in item["kids"]:
+                    comment = get_comment(kid_id)
+                    new_comment.kids.add(comment)
             return new_comment
         else:
             raise Exception
@@ -196,6 +201,11 @@ def sync_db(request):
                                     title=response["title"],
                                     url=response["url"])
                 new_story.save()
+                if "kids" in response and response["kids"]:
+                    for kid_id in response["kids"]:
+                        comment = get_comment(kid_id)
+                        new_story.kids.add(comment)
+
                 added_stories += 1
             elif response["type"] == "job":
                 new_job = Job(id=response["id"],
@@ -208,6 +218,7 @@ def sync_db(request):
                 added_jobs += 1
             else:
                 print("How on Earth did you get here!!!")
+                raise Exception
     return HttpResponse(f"Successfully added {added_stories} new stories and {added_jobs} new jobs to the database!")
 
 
