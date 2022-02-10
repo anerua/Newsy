@@ -1,0 +1,1 @@
+web: gunicorn newsy.wsgi --log-file -
