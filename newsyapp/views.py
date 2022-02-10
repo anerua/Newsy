@@ -23,23 +23,23 @@ def get_jobs(request):
 
 def get_detail(request, item_id):
 
-    item_type = get_item_type(item_id)
-    if item_type in [Story, Job]:
-        item = item_exists(item_id, item_type)
-        if item and item_type == Job:
-            return render(request, "newsyapp/item_detail.html", {
-                "type": "Job",
-                "item": item
-            })
-        elif item and item_type == Story:
-            comments = []
-            for comment in item.kids.all():
-                comments.append(comment)
-            return render(request, "newsyapp/item_detail.html", {
-                "type": "Story",
-                "item": item,
-                "comments": comments
-            })
+    if Story.objects.filter(id=item_id).exists():
+        item = Story.objects.get(id=item_id)
+        comments = []
+        for comment in item.kids.all():
+            comments.append(comment)
+        return render(request, "newsyapp/item_detail.html", {
+            "type": "Story",
+            "item": item,
+            "comments": comments
+        })
+    elif Job.objects.filter(id=item_id).exists():
+        item = Job.objects.get(id=item_id)
+        return render(request, "newsyapp/item_detail.html", {
+            "type": "Job",
+            "item": item
+        })
+
     return HttpResponseNotFound()
 
 def get_item(item_id):
@@ -128,7 +128,7 @@ def get_comment(item_id):
         
 
         if item["type"] == "comment":
-            new_comment = Comment(id=item["id"])
+            new_comment = Comment.objects.create(id=item["id"])
             if "by" in item and item["by"]:
                 new_comment.by = item["by"]
             if "time" in item and item["time"]:
@@ -137,7 +137,7 @@ def get_comment(item_id):
                 new_comment.parent = item["parent"]
             if "text" in item and item["text"]:
                 new_comment.text = item["text"]
-            new_comment.save()
+
             if "kids" in item and item["kids"]:
                 for kid_id in item["kids"]:
                     comment = get_comment(kid_id)
@@ -193,14 +193,13 @@ def sync_db(request):
 
         if response:
             if response["type"] == "story":
-                new_story = Story(id=response["id"],
+                new_story = Story.objects.create(id=response["id"],
                                     by=response["by"],
                                     time=response["time"],
                                     descendants=response["descendants"],
                                     score=response["score"],
                                     title=response["title"],
                                     url=response["url"])
-                new_story.save()
                 if "kids" in response and response["kids"]:
                     for kid_id in response["kids"]:
                         comment = get_comment(kid_id)
@@ -208,13 +207,12 @@ def sync_db(request):
 
                 added_stories += 1
             elif response["type"] == "job":
-                new_job = Job(id=response["id"],
+                new_job = Job.objects.create(id=response["id"],
                                     by=response["by"],
                                     time=response["time"],
                                     text=response["text"],
                                     title=response["title"],
                                     url=response["url"])
-                new_job.save()
                 added_jobs += 1
             else:
                 print("How on Earth did you get here!!!")
