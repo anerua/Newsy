@@ -194,23 +194,3 @@ def sync_db(request):
                 print("How on Earth did you get here!!!")
                 raise Exception
     return HttpResponse(f"Successfully added {added_stories} new stories and {added_jobs} new jobs to the database!")
-
-
-def item_exists(item_id, my_model):
-    try:
-        _ = my_model.objects.get(id=item_id)
-        return _
-    except my_model.DoesNotExist:
-        return False
-
-
-def get_item_type(item_id):
-    
-    if item_exists(item_id, Story):
-        return Story
-    elif item_exists(item_id, Job):
-        return Job
-    elif item_exists(item_id, Comment):
-        return Comment
-    else:
-        return False
