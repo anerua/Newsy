@@ -5,7 +5,6 @@ import json, time
 
 from .models import Story, Job, Comment
 
-# Create your views here.
 
 def get_stories(request):
 
@@ -42,6 +41,7 @@ def get_detail(request, item_id):
 
     return HttpResponseNotFound()
 
+
 def get_item(item_id):
 
     conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
@@ -56,9 +56,6 @@ def get_item(item_id):
     item = json.loads(data.decode("utf-8"))
 
     if item["type"] == "story":
-        # item_time = int(item["time"])
-        # elapsed_time = get_elapsed_time(item_time)
-
         descendants = None
         score = None
         url = None
@@ -84,9 +81,6 @@ def get_item(item_id):
         return details
 
     elif item["type"] == "job":
-        # item_time = int(item["time"])
-        # elapsed_time = get_elapsed_time(item_time)
-
         text = ""
         url = None
         if "text" in item:
@@ -145,22 +139,6 @@ def get_comment(item_id):
             return new_comment
         else:
             raise Exception
-    
-
-def get_elapsed_time(item_time):
-
-    diff_time = int(time.time()) - item_time
-
-    if diff_time / 86400 < 1:
-        if int(diff_time/3600) < 1:
-            if int(diff_time/60) < 1:
-                return f"{int(diff_time)} seconds ago"
-            else:
-                return f"{int(diff_time/60)} minutes ago"
-        else:
-            return f"{int(diff_time/3600)} hours ago"
-    else:
-        return f"{int(diff_time/86400)} days ago"
 
 
 def sync_db(request):
