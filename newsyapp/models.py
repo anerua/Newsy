@@ -26,5 +26,5 @@ class Comment(models.Model):
     by = models.CharField(max_length=64, blank=True)
     time = models.IntegerField(blank=True, null=True)
     kids = models.ManyToManyField("self", blank=True, symmetrical=False, related_name="comments")
-    parent = models.IntegerField()
+    parent = models.IntegerField(blank=True, null=True)
     text = models.TextField(blank=True)

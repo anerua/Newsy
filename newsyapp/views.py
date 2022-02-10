@@ -104,9 +104,8 @@ def get_item(item_id):
 
 def get_comment(item_id):
 
-    comment = item_exists(item_id, Comment)
-    if comment:
-        return comment
+    if Comment.objects.filter(id=item_id).exists():
+        return Comment.objects.get(id=item_id)
     else:
 
         conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
@@ -122,7 +121,7 @@ def get_comment(item_id):
         
 
         if item["type"] == "comment":
-            new_comment = Comment.objects.create(id=item["id"])
+            new_comment = Comment(id=item["id"])
             if "by" in item and item["by"]:
                 new_comment.by = item["by"]
             if "time" in item and item["time"]:
@@ -131,6 +130,7 @@ def get_comment(item_id):
                 new_comment.parent = item["parent"]
             if "text" in item and item["text"]:
                 new_comment.text = item["text"]
+            new_comment.save()
 
             if "kids" in item and item["kids"]:
                 for kid_id in item["kids"]:
@@ -162,9 +162,7 @@ def sync_db(request):
     added_stories = 0
     added_jobs = 0
     for item_id in items_list:
-        if item_exists(item_id, Story):
-            continue
-        if item_exists(item_id, Job):
+        if Story.objects.filter(id=item_id).exists() or Job.objects.filter(id=item_id).exists():
             continue
 
         response = get_item(item_id)
