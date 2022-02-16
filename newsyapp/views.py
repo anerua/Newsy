@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 import http.client
-import json, time
+import json
 
 from .models import Story, Job, Comment
 
@@ -23,6 +23,14 @@ def get_jobs(request):
 def get_detail(request, item_id):
 
     if Story.objects.filter(id=item_id).exists():
+
+        # conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
+        # payload = "{}"
+        # conn.request("GET", f"/v0/item/{item_id}.json?print=pretty", payload)
+        # res = conn.getresponse()
+        # data = res.read()
+        # new_item = json.loads(data.decode("utf-8"))
+
         item = Story.objects.get(id=item_id)
         comments = []
         for comment in item.kids.all():
@@ -194,3 +202,30 @@ def sync_db(request):
                 print("How on Earth did you get here!!!")
                 raise Exception
     return HttpResponse(f"Successfully added {added_stories} new stories and {added_jobs} new jobs to the database!")
+
+
+def update_stories(request):
+    
+    stories = Story.objects.in_bulk()
+
+    stories_list = list(stories.values())
+    id_list = list(stories.keys())
+
+    count = 0
+    for story_id in stories:
+        new_info = get_item(str(story_id))
+        if new_info:
+            for kid_id in new_info['kids']:
+                if not Comment.objects.filter(id=kid_id).exists():
+                    new_comment = get_comment(kid_id)
+                    stories[story_id].kids.add(new_comment)
+            stories[story_id].descendants = new_info['descendants']
+            stories[story_id].score = new_info['score']
+        count += 1
+        print(count)
+
+    
+    Story.objects.bulk_update(stories_list, ['descendants', 'score'])
+
+    return HttpResponse(f"Update successful!")
+        
