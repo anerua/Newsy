@@ -175,6 +175,10 @@ def sync_stories(request):
            
     print(f"Successfully added {added_stories} new stories to the database!")
 
+    delete_old_stories(stories_list)
+    delete_old_comments()
+    update_stories()
+
 
 def sync_jobs(request):
 
@@ -208,8 +212,10 @@ def sync_jobs(request):
 
     print(f"Successfully added {added_jobs} new jobs to the database!")
 
+    delete_old_jobs(jobs_list)
 
-def update_stories(request):
+
+def update_stories():
     
     stories = Story.objects.in_bulk()
     stories_list = list(stories.values())
@@ -228,22 +234,25 @@ def update_stories(request):
             stories[story_id].score = new_info['score']
 
         count += 1
-        print(count, flush=True)
 
     Story.objects.bulk_update(stories_list, ['descendants', 'score'])
 
-    return HttpResponse(f"Update successful!")
+    print(f"SUCCESSFULLY UPDATED {count} STORIES")
         
 
-def delete_old_stories(request, new_id_list):
+def delete_old_stories(new_id_list):
     old_stories = Story.objects.in_bulk()
     
+    count = 0
     for story_id in old_stories:
         if str(story_id) not in new_id_list:
             old_stories[story_id].delete()
+            count += 1
+
+    print(f"SUCCESSFULLY DELETED {count} STORIES")
     
 
-def delete_old_jobs(request, new_id_list):
+def delete_old_jobs(new_id_list):
     old_jobs = Job.objects.in_bulk()
 
     for job_id in old_jobs:
@@ -251,8 +260,12 @@ def delete_old_jobs(request, new_id_list):
             old_jobs[job_id].delete()
 
 
-def delete_old_comments(request):
+def delete_old_comments():
 
+    count = 0
     for comment in Comment.objects.all():
         if (not Story.objects.filter(id=comment.parent).exists()) and (not Comment.objects.filter(id=comment.parent).exists()):
             comment.delete()
+            count += 1
+    
+    print(f"SUCCESSFULLY DELETED {count} COMMENTS")
