@@ -20,21 +20,22 @@ def get_jobs(request):
     return render(request, "newsyapp/jobs.html", {"jobs": jobs})
 
 
-def get_detail(request, item_id):
+def get_story(request, item_id):
 
     if Story.objects.filter(id=item_id).exists():
         item = Story.objects.get(id=item_id)
-        comments = []
-        for comment in item.kids.all():
-            comments.append(comment)
-
+        comments = item.kids.all()
         return render(request, "newsyapp/item_detail.html", {
             "type": "Story",
             "item": item,
             "comments": comments
         })
 
-    elif Job.objects.filter(id=item_id).exists():
+    return HttpResponseNotFound()
+
+def get_job(request, item_id):
+
+    if Job.objects.filter(id=item_id).exists():
         item = Job.objects.get(id=item_id)
         return render(request, "newsyapp/item_detail.html", {
             "type": "Job",

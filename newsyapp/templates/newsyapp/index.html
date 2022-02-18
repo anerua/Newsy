@@ -14,7 +14,7 @@
         <li>
             <hr>
                 <p>{{ story.id }}</p>
-                <h3><a href="{% url 'detail' story.id %}">{{ story.title }}</a></h3>  
+                <h3><a href="{% url 'story_detail' story.id %}">{{ story.title }}</a></h3>  
                 {% if story.url %}
                     <p><a href="{{ story.url }}", target="blank">{{ story.url }}</a></p>  
                 {% endif %}
