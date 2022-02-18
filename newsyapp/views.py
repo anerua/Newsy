@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 import http.client
-import json, time
+import json
 
 from .models import Story, Job, Comment
 
@@ -148,6 +148,7 @@ def sync_db(request):
     items = items.replace("]", "")
     
     items_list = items.split(",")
+    items_list = [x.strip() for x in items_list]
 
     added_stories = 0
     added_jobs = 0
@@ -211,3 +212,25 @@ def update_stories(request):
 
     return HttpResponse(f"Update successful!")
         
+
+def delete_old_stories(request, new_id_list):
+    old_stories = Story.objects.in_bulk()
+    
+    for story_id in old_stories:
+        if str(story_id) not in new_id_list:
+            old_stories[story_id].delete()
+    
+
+def delete_old_jobs(request, new_id_list):
+    old_jobs = Job.objects.in_bulk()
+
+    for job_id in old_jobs:
+        if str(job_id) not in new_id_list:
+            old_jobs[job_id].delete()
+
+
+def delete_old_comments(request):
+
+    for comment in Comment.objects.all():
+        if (not Story.objects.filter(id=comment.parent).exists()) and (not Comment.objects.filter(id=comment.parent).exists()):
+            comment.delete()
