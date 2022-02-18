@@ -33,6 +33,7 @@ def get_story(request, item_id):
 
     return HttpResponseNotFound()
 
+
 def get_job(request, item_id):
 
     if Job.objects.filter(id=item_id).exists():
@@ -45,7 +46,7 @@ def get_job(request, item_id):
     return HttpResponseNotFound()
 
 
-def get_item(item_id):
+def fetch_item(item_id):
 
     conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
     payload = "{}"
@@ -101,7 +102,7 @@ def get_item(item_id):
         return False
 
 
-def get_comment(item_id):
+def fetch_or_get_comment(item_id):
 
     if Comment.objects.filter(id=item_id).exists():
         return Comment.objects.get(id=item_id)
@@ -129,63 +130,83 @@ def get_comment(item_id):
 
             if "kids" in item and item["kids"]:
                 for kid_id in item["kids"]:
-                    comment = get_comment(kid_id)
+                    comment = fetch_or_get_comment(kid_id)
                     new_comment.kids.add(comment)
             return new_comment
         else:
             raise Exception
 
 
-def sync_db(request):
-
+def sync_stories(request):
+    
     conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
     payload = "{}"
     conn.request("GET", "/v0/topstories.json?print=pretty", payload)
     res = conn.getresponse()
     data = res.read()
 
-    items = data.decode("utf-8")
-    items = items.replace("[", "")
-    items = items.replace("]", "")
+    stories = data.decode("utf-8")
+    stories = stories.replace("[", "")
+    stories = stories.replace("]", "")
     
-    items_list = items.split(",")
-    items_list = [x.strip() for x in items_list]
+    stories_list = stories.split(",")
+    stories_list = [x.strip() for x in stories_list]
 
     added_stories = 0
-    added_jobs = 0
-    for item_id in items_list:
-        if Story.objects.filter(id=item_id).exists() or Job.objects.filter(id=item_id).exists():
+    for story_id in stories_list:
+        if Story.objects.filter(id=story_id).exists():
             continue
 
-        response = get_item(item_id)
+        response = fetch_item(story_id)
+        if response and response["type"] == "story":
+            new_story = Story.objects.create(id=response["id"],
+                                by=response["by"],
+                                time=response["time"],
+                                descendants=response["descendants"],
+                                score=response["score"],
+                                title=response["title"],
+                                url=response["url"])
+            if "kids" in response and response["kids"]:
+                for kid_id in response["kids"]:
+                    comment = fetch_or_get_comment(kid_id)
+                    new_story.kids.add(comment)
 
-        if response:
-            if response["type"] == "story":
-                new_story = Story.objects.create(id=response["id"],
-                                    by=response["by"],
-                                    time=response["time"],
-                                    descendants=response["descendants"],
-                                    score=response["score"],
-                                    title=response["title"],
-                                    url=response["url"])
-                if "kids" in response and response["kids"]:
-                    for kid_id in response["kids"]:
-                        comment = get_comment(kid_id)
-                        new_story.kids.add(comment)
+            added_stories += 1
+           
+    print(f"Successfully added {added_stories} new stories to the database!")
 
-                added_stories += 1
-            elif response["type"] == "job":
-                new_job = Job.objects.create(id=response["id"],
+
+def sync_jobs(request):
+
+    conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
+    payload = "{}"
+    conn.request("GET", "/v0/jobstories.json?print=pretty", payload)
+    res = conn.getresponse()
+    data = res.read()
+
+    jobs = data.decode("utf-8")
+    jobs = jobs.replace("[", "")
+    jobs = jobs.replace("]", "")
+    
+    jobs_list = jobs.split(",")
+    jobs_list = [x.strip() for x in jobs_list]
+
+    added_jobs = 0
+    for job_id in jobs_list:
+        if Job.objects.filter(id=job_id).exists():
+            continue
+
+        response = fetch_item(job_id)
+        if response and response["type"] == "job":
+                Job.objects.create(id=response["id"],
                                     by=response["by"],
                                     time=response["time"],
                                     text=response["text"],
                                     title=response["title"],
                                     url=response["url"])
                 added_jobs += 1
-            else:
-                print("How on Earth did you get here!!!")
-                raise Exception
-    return HttpResponse(f"Successfully added {added_stories} new stories and {added_jobs} new jobs to the database!")
+
+    print(f"Successfully added {added_jobs} new jobs to the database!")
 
 
 def update_stories(request):
@@ -196,11 +217,11 @@ def update_stories(request):
     count = 0
 
     for story_id in stories:
-        new_info = get_item(str(story_id))
+        new_info = fetch_item(str(story_id))
         if new_info:
             for kid_id in new_info['kids']:
                 if not Comment.objects.filter(id=kid_id).exists():
-                    new_comment = get_comment(kid_id)
+                    new_comment = fetch_or_get_comment(kid_id)
                     stories[story_id].kids.add(new_comment)
 
             stories[story_id].descendants = new_info['descendants']
