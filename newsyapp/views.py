@@ -1,7 +1,7 @@
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render
 import http.client
-import json
+import json, time
 
 from .models import Story, Job, Comment
 
@@ -23,23 +23,17 @@ def get_jobs(request):
 def get_detail(request, item_id):
 
     if Story.objects.filter(id=item_id).exists():
-
-        # conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-        # payload = "{}"
-        # conn.request("GET", f"/v0/item/{item_id}.json?print=pretty", payload)
-        # res = conn.getresponse()
-        # data = res.read()
-        # new_item = json.loads(data.decode("utf-8"))
-
         item = Story.objects.get(id=item_id)
         comments = []
         for comment in item.kids.all():
             comments.append(comment)
+
         return render(request, "newsyapp/item_detail.html", {
             "type": "Story",
             "item": item,
             "comments": comments
         })
+
     elif Job.objects.filter(id=item_id).exists():
         item = Job.objects.get(id=item_id)
         return render(request, "newsyapp/item_detail.html", {
@@ -53,11 +47,8 @@ def get_detail(request, item_id):
 def get_item(item_id):
 
     conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-
     payload = "{}"
-
     conn.request("GET", f"/v0/item/{item_id.strip()}.json?print=pretty", payload)
-
     res = conn.getresponse()
     data = res.read()
 
@@ -96,7 +87,6 @@ def get_item(item_id):
         if "url" in item:
             url = item["url"]
 
-
         details = {"id": item["id"],
                     "type": item["type"],
                     "by": item["by"],
@@ -114,19 +104,15 @@ def get_comment(item_id):
 
     if Comment.objects.filter(id=item_id).exists():
         return Comment.objects.get(id=item_id)
+    
     else:
-
         conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-
         payload = "{}"
-
         conn.request("GET", f"/v0/item/{item_id}.json?print=pretty", payload)
-
         res = conn.getresponse()
         data = res.read()
 
         item = json.loads(data.decode("utf-8"))
-        
 
         if item["type"] == "comment":
             new_comment = Comment(id=item["id"])
@@ -152,16 +138,12 @@ def get_comment(item_id):
 def sync_db(request):
 
     conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-
     payload = "{}"
-
     conn.request("GET", "/v0/topstories.json?print=pretty", payload)
-
     res = conn.getresponse()
     data = res.read()
 
     items = data.decode("utf-8")
-
     items = items.replace("[", "")
     items = items.replace("]", "")
     
@@ -207,11 +189,10 @@ def sync_db(request):
 def update_stories(request):
     
     stories = Story.objects.in_bulk()
-
     stories_list = list(stories.values())
-    id_list = list(stories.keys())
 
     count = 0
+
     for story_id in stories:
         new_info = get_item(str(story_id))
         if new_info:
@@ -219,12 +200,13 @@ def update_stories(request):
                 if not Comment.objects.filter(id=kid_id).exists():
                     new_comment = get_comment(kid_id)
                     stories[story_id].kids.add(new_comment)
+
             stories[story_id].descendants = new_info['descendants']
             stories[story_id].score = new_info['score']
-        count += 1
-        print(count)
 
-    
+        count += 1
+        print(count, flush=True)
+
     Story.objects.bulk_update(stories_list, ['descendants', 'score'])
 
     return HttpResponse(f"Update successful!")
