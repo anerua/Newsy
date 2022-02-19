@@ -4,6 +4,11 @@ import http.client
 import json
 
 from .models import Story, Job, Comment
+from newsyapp import tasks
+
+
+MAX_STORY_ITEMS = 1000
+MAX_JOB_ITEMS = 1000
 
 
 def get_stories(request):
@@ -15,7 +20,7 @@ def get_stories(request):
 
 def get_jobs(request):
 
-    jobs = Job.objects.all()
+    jobs = Job.objects.order_by('-time')
 
     return render(request, "newsyapp/jobs.html", {"jobs": jobs})
 
@@ -181,38 +186,8 @@ def sync_stories(request):
 
 
 def sync_jobs(request):
-
-    conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-    payload = "{}"
-    conn.request("GET", "/v0/jobstories.json?print=pretty", payload)
-    res = conn.getresponse()
-    data = res.read()
-
-    jobs = data.decode("utf-8")
-    jobs = jobs.replace("[", "")
-    jobs = jobs.replace("]", "")
-    
-    jobs_list = jobs.split(",")
-    jobs_list = [x.strip() for x in jobs_list]
-
-    added_jobs = 0
-    for job_id in jobs_list:
-        if Job.objects.filter(id=job_id).exists():
-            continue
-
-        response = fetch_item(job_id)
-        if response and response["type"] == "job":
-                Job.objects.create(id=response["id"],
-                                    by=response["by"],
-                                    time=response["time"],
-                                    text=response["text"],
-                                    title=response["title"],
-                                    url=response["url"])
-                added_jobs += 1
-
-    print(f"Successfully added {added_jobs} new jobs to the database!")
-
-    delete_old_jobs(jobs_list)
+    tasks.sync_jobs_task.delay()
+    return HttpResponse("Update in progress")
 
 
 def update_stories():
@@ -241,23 +216,37 @@ def update_stories():
         
 
 def delete_old_stories(new_id_list):
-    old_stories = Story.objects.in_bulk()
-    
-    count = 0
-    for story_id in old_stories:
-        if str(story_id) not in new_id_list:
-            old_stories[story_id].delete()
-            count += 1
 
-    print(f"SUCCESSFULLY DELETED {count} STORIES")
+    if Story.objects.count() > MAX_STORY_ITEMS:
+        
+        all_stories = Story.objects.order_by('-time')
+        old_stories = all_stories[MAX_STORY_ITEMS:]
+        
+        count = 0
+        for story in old_stories:
+            if str(story.id) not in new_id_list:
+                story.delete()
+                count += 1
+        print(f"SUCCESSFULLY DELETED {count} OLD STORIES")
+    else:
+        print(f"THERE ARE NO OLD STORIES TO DELETE")
     
 
 def delete_old_jobs(new_id_list):
-    old_jobs = Job.objects.in_bulk()
 
-    for job_id in old_jobs:
-        if str(job_id) not in new_id_list:
-            old_jobs[job_id].delete()
+    if Job.objects.count() > MAX_JOB_ITEMS:
+
+        all_jobs = Job.objects.order_by('-time')
+        old_jobs = all_jobs[MAX_JOB_ITEMS:]
+
+        count = 0
+        for job in old_jobs:
+            if str(job.id) not in new_id_list:
+                job.delete()
+                count += 1
+        print(f"SUCCESSFULLY DELETED {count} OLD JOBS")
+    else:
+        print(f"THERE ARE NO OLD JOBS TO DELETE")
 
 
 def delete_old_comments():
