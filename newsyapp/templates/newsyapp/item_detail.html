@@ -21,7 +21,7 @@
 
     {% if type == "Job" %}
         {% if item.text %}
-            <p>{{ item.text }}</p>
+            <p>{{ item.text | safe}}</p>
         {% endif %}
     {% elif type == "Story" %}
         {% if item.score %}
