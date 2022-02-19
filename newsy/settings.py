@@ -144,16 +144,25 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 prod_db  =  dj_database_url.config(conn_max_age=500)
 DATABASES['default'].update(prod_db)
 
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+# CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_BROKER_URL = os.environ['REDIS_URL']
+# CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+CELERY_RESULT_BACKEND = os.environ['REDIS_URL']
 
 CELERY_BEAT_SCHEDULE = {
-      'sync-every-1-minute': {
+    'sync-jobs-task': {
         'task': 'newsyapp.tasks.sync_jobs_task',
-        'schedule': 60.0,
+        'schedule': 600.0,
         # 'args': (16, 16),
         'options': {
-            'expires': 30.0,
+            'expires': 60.0,
+        },
+    },
+    'sync-stories-task': {
+        'task': 'newsyapp.tasks.sync_stories_task',
+        'schedule': 300.0,
+        'options': {
+            'expires': 270.0,
         },
     },
 }

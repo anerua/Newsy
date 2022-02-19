@@ -4,7 +4,6 @@ import http.client
 import json
 
 from .models import Story, Job, Comment
-from newsyapp import tasks
 
 
 MAX_STORY_ITEMS = 1000
@@ -140,54 +139,6 @@ def fetch_or_get_comment(item_id):
             return new_comment
         else:
             raise Exception
-
-
-def sync_stories(request):
-    
-    conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-    payload = "{}"
-    conn.request("GET", "/v0/topstories.json?print=pretty", payload)
-    res = conn.getresponse()
-    data = res.read()
-
-    stories = data.decode("utf-8")
-    stories = stories.replace("[", "")
-    stories = stories.replace("]", "")
-    
-    stories_list = stories.split(",")
-    stories_list = [x.strip() for x in stories_list]
-
-    added_stories = 0
-    for story_id in stories_list:
-        if Story.objects.filter(id=story_id).exists():
-            continue
-
-        response = fetch_item(story_id)
-        if response and response["type"] == "story":
-            new_story = Story.objects.create(id=response["id"],
-                                by=response["by"],
-                                time=response["time"],
-                                descendants=response["descendants"],
-                                score=response["score"],
-                                title=response["title"],
-                                url=response["url"])
-            if "kids" in response and response["kids"]:
-                for kid_id in response["kids"]:
-                    comment = fetch_or_get_comment(kid_id)
-                    new_story.kids.add(comment)
-
-            added_stories += 1
-           
-    print(f"Successfully added {added_stories} new stories to the database!")
-
-    delete_old_stories(stories_list)
-    delete_old_comments()
-    update_stories()
-
-
-def sync_jobs(request):
-    tasks.sync_jobs_task.delay()
-    return HttpResponse("Update in progress")
 
 
 def update_stories():

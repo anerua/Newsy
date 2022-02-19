@@ -1,19 +1,52 @@
 from celery import shared_task
 import http.client
 
-from .models import Job
+from .models import Story, Job
 from newsyapp import views
 
-# from celery import Celery
 
+@shared_task
+def sync_stories_task():
+    
+    conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
+    payload = "{}"
+    conn.request("GET", "/v0/topstories.json?print=pretty", payload)
+    res = conn.getresponse()
+    data = res.read()
 
-# app = Celery()
+    stories = data.decode("utf-8")
+    stories = stories.replace("[", "")
+    stories = stories.replace("]", "")
+    
+    stories_list = stories.split(",")
+    stories_list = [x.strip() for x in stories_list]
 
+    added_stories = 0
+    for story_id in stories_list:
+        if Story.objects.filter(id=story_id).exists():
+            continue
 
-# @app.on_after_configure.connect
-# def setup_periodic_tasks(sender, **kwargs):
-#     # Calls test('hello') every 10 seconds.
-#     sender.add_periodic_task(60.0, sync_jobs_task.s(), name='add-every-10', expires=30)
+        response = views.fetch_item(story_id)
+        if response and response["type"] == "story":
+            new_story = Story.objects.create(id=response["id"],
+                                by=response["by"],
+                                time=response["time"],
+                                descendants=response["descendants"],
+                                score=response["score"],
+                                title=response["title"],
+                                url=response["url"])
+            if "kids" in response and response["kids"]:
+                for kid_id in response["kids"]:
+                    comment = views.fetch_or_get_comment(kid_id)
+                    new_story.kids.add(comment)
+
+            added_stories += 1
+           
+    print(f"Successfully added {added_stories} new stories to the database!")
+
+    views.delete_old_stories(stories_list)
+    views.delete_old_comments()
+    views.update_stories()
 
 
 @shared_task
@@ -50,11 +83,3 @@ def sync_jobs_task():
     print(f"SUCCESSFULLY ADDED {added_jobs} NEW JOBS TO THE DATABASE")
 
     views.delete_old_jobs(jobs_list)
-
-# app.conf.beat_schedule = {
-#     'add-every-10': {
-#         'task': 'tasks.sync_jobs_task',
-#         'schedule': 60.0,
-#         # 'args': (16, 16)
-#     },
-# }
