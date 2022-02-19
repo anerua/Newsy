@@ -146,3 +146,14 @@ DATABASES['default'].update(prod_db)
 
 CELERY_BROKER_URL = "redis://localhost:6379/0"
 CELERY_RESULT_BACKEND = "redis://localhost:6379/1"
+
+CELERY_BEAT_SCHEDULE = {
+      'sync-every-1-minute': {
+        'task': 'newsyapp.tasks.sync_jobs_task',
+        'schedule': 60.0,
+        # 'args': (16, 16),
+        'options': {
+            'expires': 30.0,
+        },
+    },
+}

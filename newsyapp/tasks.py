@@ -4,6 +4,17 @@ import http.client
 from .models import Job
 from newsyapp import views
 
+# from celery import Celery
+
+
+# app = Celery()
+
+
+# @app.on_after_configure.connect
+# def setup_periodic_tasks(sender, **kwargs):
+#     # Calls test('hello') every 10 seconds.
+#     sender.add_periodic_task(60.0, sync_jobs_task.s(), name='add-every-10', expires=30)
+
 
 @shared_task
 def sync_jobs_task():
@@ -39,3 +50,11 @@ def sync_jobs_task():
     print(f"SUCCESSFULLY ADDED {added_jobs} NEW JOBS TO THE DATABASE")
 
     views.delete_old_jobs(jobs_list)
+
+# app.conf.beat_schedule = {
+#     'add-every-10': {
+#         'task': 'tasks.sync_jobs_task',
+#         'schedule': 60.0,
+#         # 'args': (16, 16)
+#     },
+# }
