@@ -3,7 +3,7 @@ from django.shortcuts import render
 import http.client
 import json
 
-from .models import Story, Job, Comment
+from .models import Story, Job
 
 
 MAX_STORY_ITEMS = 1000

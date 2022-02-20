@@ -4,9 +4,12 @@
     Newsy! {{ item.title }}
 {% endblock %}
 
+{% block heading %}
+    <h1>{{ item.title }}</h1>
+{% endblock %}
+
 {% block body %}
 
-    <h1>{{ item.title }}</h1>
     <br><br><br>
 
     {% if item.by %}

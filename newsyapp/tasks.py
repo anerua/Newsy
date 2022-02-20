@@ -28,24 +28,24 @@ def sync_stories_task():
 
         response = views.fetch_item(story_id)
         if response and response["type"] == "story":
-            new_story = Story.objects.create(id=response["id"],
+            Story.objects.create(id=response["id"],
                                 by=response["by"],
                                 time=response["time"],
                                 descendants=response["descendants"],
                                 score=response["score"],
                                 title=response["title"],
                                 url=response["url"])
-            if "kids" in response and response["kids"]:
-                for kid_id in response["kids"]:
-                    comment = views.fetch_or_get_comment(kid_id)
-                    new_story.kids.add(comment)
+            # if "kids" in response and response["kids"]:
+            #     for kid_id in response["kids"]:
+            #         comment = views.fetch_or_get_comment(kid_id)
+            #         new_story.kids.add(comment)
 
             added_stories += 1
            
     print(f"Successfully added {added_stories} new stories to the database!")
 
     views.delete_old_stories(stories_list)
-    views.delete_old_comments()
+    # views.delete_old_comments()
     views.update_stories()
 
 
