@@ -12,7 +12,7 @@ MAX_JOB_ITEMS = 1000
 
 def get_stories(request):
 
-    stories = Story.objects.all()
+    stories = Story.objects.order_by('-time')
 
     return render(request, "newsyapp/index.html", {"stories": stories})
 
@@ -28,11 +28,11 @@ def get_story(request, item_id):
 
     if Story.objects.filter(id=item_id).exists():
         item = Story.objects.get(id=item_id)
-        comments = item.kids.all()
+        # comments = item.kids.all()
         return render(request, "newsyapp/item_detail.html", {
             "type": "Story",
             "item": item,
-            "comments": comments
+            # "comments": comments
         })
 
     return HttpResponseNotFound()
@@ -64,9 +64,9 @@ def fetch_item(item_id):
         descendants = None
         score = None
         url = None
-        kids = None
-        if "kids" in item:
-            kids = item["kids"]
+        # kids = None
+        # if "kids" in item:
+        #     kids = item["kids"]
         if "descendants" in item:
             descendants = item["descendants"]
         if "score" in item:
@@ -78,7 +78,7 @@ def fetch_item(item_id):
                     "type": item["type"],
                     "by": item["by"],
                     "time": item["time"],
-                    "kids": kids,
+                    # "kids": kids,
                     "descendants": descendants,
                     "score": score,
                     "title": item["title"],
@@ -106,39 +106,39 @@ def fetch_item(item_id):
         return False
 
 
-def fetch_or_get_comment(item_id):
+# def fetch_or_get_comment(item_id):
 
-    if Comment.objects.filter(id=item_id).exists():
-        return Comment.objects.get(id=item_id)
+#     if Comment.objects.filter(id=item_id).exists():
+#         return Comment.objects.get(id=item_id)
     
-    else:
-        conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
-        payload = "{}"
-        conn.request("GET", f"/v0/item/{item_id}.json?print=pretty", payload)
-        res = conn.getresponse()
-        data = res.read()
+#     else:
+#         conn = http.client.HTTPSConnection("hacker-news.firebaseio.com")
+#         payload = "{}"
+#         conn.request("GET", f"/v0/item/{item_id}.json?print=pretty", payload)
+#         res = conn.getresponse()
+#         data = res.read()
 
-        item = json.loads(data.decode("utf-8"))
+#         item = json.loads(data.decode("utf-8"))
 
-        if item["type"] == "comment":
-            new_comment = Comment(id=item["id"])
-            if "by" in item and item["by"]:
-                new_comment.by = item["by"]
-            if "time" in item and item["time"]:
-                new_comment.time = item["time"]
-            if "parent" in item and item["parent"]:
-                new_comment.parent = item["parent"]
-            if "text" in item and item["text"]:
-                new_comment.text = item["text"]
-            new_comment.save()
+#         if item["type"] == "comment":
+#             new_comment = Comment(id=item["id"])
+#             if "by" in item and item["by"]:
+#                 new_comment.by = item["by"]
+#             if "time" in item and item["time"]:
+#                 new_comment.time = item["time"]
+#             if "parent" in item and item["parent"]:
+#                 new_comment.parent = item["parent"]
+#             if "text" in item and item["text"]:
+#                 new_comment.text = item["text"]
+#             new_comment.save()
 
-            if "kids" in item and item["kids"]:
-                for kid_id in item["kids"]:
-                    comment = fetch_or_get_comment(kid_id)
-                    new_comment.kids.add(comment)
-            return new_comment
-        else:
-            raise Exception
+#             if "kids" in item and item["kids"]:
+#                 for kid_id in item["kids"]:
+#                     comment = fetch_or_get_comment(kid_id)
+#                     new_comment.kids.add(comment)
+#             return new_comment
+#         else:
+#             raise Exception
 
 
 def update_stories():
@@ -151,10 +151,10 @@ def update_stories():
     for story_id in stories:
         new_info = fetch_item(str(story_id))
         if new_info:
-            for kid_id in new_info['kids']:
-                if not Comment.objects.filter(id=kid_id).exists():
-                    new_comment = fetch_or_get_comment(kid_id)
-                    stories[story_id].kids.add(new_comment)
+            # for kid_id in new_info['kids']:
+            #     if not Comment.objects.filter(id=kid_id).exists():
+            #         new_comment = fetch_or_get_comment(kid_id)
+            #         stories[story_id].kids.add(new_comment)
 
             stories[story_id].descendants = new_info['descendants']
             stories[story_id].score = new_info['score']
@@ -200,12 +200,12 @@ def delete_old_jobs(new_id_list):
         print(f"THERE ARE NO OLD JOBS TO DELETE")
 
 
-def delete_old_comments():
+# def delete_old_comments():
 
-    count = 0
-    for comment in Comment.objects.all():
-        if (not Story.objects.filter(id=comment.parent).exists()) and (not Comment.objects.filter(id=comment.parent).exists()):
-            comment.delete()
-            count += 1
+#     count = 0
+#     for comment in Comment.objects.all():
+#         if (not Story.objects.filter(id=comment.parent).exists()) and (not Comment.objects.filter(id=comment.parent).exists()):
+#             comment.delete()
+#             count += 1
     
-    print(f"SUCCESSFULLY DELETED {count} COMMENTS")
+#     print(f"SUCCESSFULLY DELETED {count} COMMENTS")
