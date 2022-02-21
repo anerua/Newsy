@@ -11,7 +11,7 @@
 {% block body %}
 
 <h1>{{ item.title }}</h1>
-<br><br><br>
+<br><br>
 
     {% if item.by %}
         Posted by {{ item.by }}. {{ item.time }}
@@ -40,20 +40,10 @@
         <div id="comments-area">
 
         </div>
-
-        {% comment %} {% for comment in comments %}
-            <p>
-                {{ comment.by }} | {{ comment.time }}
-                <p>{{ comment.text | safe }}</p>
-            </p>
-        {% empty %}
-
-        {% endfor %} {% endcomment %}
     {% else %}
 
     {% endif %}
 
-    <p></p>
     <script src="{% static 'newsyapp/js/newsy.js' %}"></script> 
 
 {% endblock %}

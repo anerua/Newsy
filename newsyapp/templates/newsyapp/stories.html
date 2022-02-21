@@ -13,9 +13,6 @@
             <div class="col">
                 <div class="h-100 p-5 text-white bg-dark rounded-3">
                     <h4>{{ story.title }}</h4>
-                    {% comment %} {% if story.url %}
-                        <p>Details <a href="{{ story.url }}", target="blank">here</a></p>
-                    {% endif %} {% endcomment %}
                     {% if story.descendants %}
                         <p>{{ story.descendants }} comments.</p>
                     {% else %}
@@ -30,7 +27,6 @@
                 </div>
             </div>
 
-                {% comment %} <h3><a href="{% url 'story_detail' story.id %}">{{ story.title }}</a></h3>   {% endcomment %}
         {% endfor %}
     </div>
 
