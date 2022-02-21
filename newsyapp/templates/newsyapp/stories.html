@@ -1,0 +1,37 @@
+{% extends "newsyapp/layout.html" %}
+
+{% block title %}
+    Newsy! Stories
+{% endblock %}
+
+{% block body %}
+    <h1 class="display-6 fst-italic text-primary text-center">-Stories-</h1>
+    <hr>
+
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for story in stories %}
+            <div class="col">
+                <div class="h-100 p-5 text-white bg-dark rounded-3">
+                    <h4>{{ story.title }}</h4>
+                    {% comment %} {% if story.url %}
+                        <p>Details <a href="{{ story.url }}", target="blank">here</a></p>
+                    {% endif %} {% endcomment %}
+                    {% if story.descendants %}
+                        <p>{{ story.descendants }} comments.</p>
+                    {% else %}
+                        <p>0 comments.</p>
+                    {% endif %}
+                    <p>{{ story.time }}</p>
+                    <p>Posted by {{ story.by }}</p>
+                    <a href="{% url 'story_detail' story.id %}">
+                        <button class="btn btn-outline-light" type="button" >View story</button>
+                    </a>
+
+                </div>
+            </div>
+
+                {% comment %} <h3><a href="{% url 'story_detail' story.id %}">{{ story.title }}</a></h3>   {% endcomment %}
+        {% endfor %}
+    </div>
+
+{% endblock %}

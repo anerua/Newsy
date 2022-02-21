@@ -1,16 +1,17 @@
 {% extends "newsyapp/layout.html" %}
+{% load static %}
 
 {% block title %}
     Newsy! {{ item.title }}
 {% endblock %}
 
 {% block heading %}
-    <h1>{{ item.title }}</h1>
 {% endblock %}
 
 {% block body %}
 
-    <br><br><br>
+<h1>{{ item.title }}</h1>
+<br><br><br>
 
     {% if item.by %}
         Posted by {{ item.by }}. {{ item.time }}
@@ -32,18 +33,27 @@
         {% endif %}
         <h3>Comments</h3>
         <hr>
-        {% for comment in comments %}
+
+        {{ item.descendants|json_script:"descendants-data" }}
+        {{ item.id|json_script:"id-data" }}
+
+        <div id="comments-area">
+
+        </div>
+
+        {% comment %} {% for comment in comments %}
             <p>
                 {{ comment.by }} | {{ comment.time }}
                 <p>{{ comment.text | safe }}</p>
             </p>
         {% empty %}
 
-        {% endfor %}
+        {% endfor %} {% endcomment %}
     {% else %}
 
     {% endif %}
 
     <p></p>
+    <script src="{% static 'newsyapp/js/newsy.js' %}"></script> 
 
 {% endblock %}

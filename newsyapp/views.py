@@ -9,12 +9,32 @@ from .models import Story, Job
 MAX_STORY_ITEMS = 1000
 MAX_JOB_ITEMS = 1000
 
+TOP_STORIES = 7
+TOP_JOBS = 7
+
+def home(request):
+
+    stories = Story.objects.order_by('-score')
+    top_story = stories[0]
+    top_stories = stories[1:TOP_STORIES]
+
+    jobs = Job.objects.order_by('-time')
+    top_job = jobs[0]
+    top_jobs = jobs[1:TOP_JOBS]
+    
+    return render(request, "newsyapp/home.html", {
+        "top_story": top_story,
+        "top_stories": top_stories,
+        "top_job": top_job,
+        "top_jobs": top_jobs
+    })
+
 
 def get_stories(request):
 
     stories = Story.objects.order_by('-time')
 
-    return render(request, "newsyapp/index.html", {"stories": stories})
+    return render(request, "newsyapp/stories.html", {"stories": stories})
 
 
 def get_jobs(request):
@@ -28,11 +48,9 @@ def get_story(request, item_id):
 
     if Story.objects.filter(id=item_id).exists():
         item = Story.objects.get(id=item_id)
-        # comments = item.kids.all()
         return render(request, "newsyapp/item_detail.html", {
             "type": "Story",
             "item": item,
-            # "comments": comments
         })
 
     return HttpResponseNotFound()

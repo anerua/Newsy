@@ -1,0 +1,85 @@
+{% extends "newsyapp/layout.html" %}
+{% load static %}
+
+{% block title %}
+    Newsy! Top Stories
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="display-4 fst-italic text-primary text-center">-Top Stories-</h1>
+    <hr>
+
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
+        <div class="col-md-6 px-0">
+            <h1 class="display-4 fst-italic">{{ top_story.title }}</h1>
+            {% if top_story.descendants %}
+                <p class="lead my-3">{{ top_story.descendants }} comments.</p>
+            {% else %}
+                <p class="lead my-3">0 comments.</p>
+            {% endif %}
+            <p class="lead my-3 text-muted">{{ top_story.time }}</p>
+            <p class="lead my-3">Posted by {{ top_story.by }}.</p>
+            <p class="lead mb-0"><a href="{% url 'story_detail' top_story.id %}" class="text-white fw-bold">Read</a></p>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        {% for story in top_stories %}
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-primary">Story</strong>
+                        <h3 class="mb-0">{{ story.title }}</h3>
+                        <div class="mb-1 text-muted">{{ story.time }}</div>
+                        <p class="card-text mb-auto">
+                            {% if story.descendants %}
+                                {{ story.descendants }} comments.
+                            {% else %}
+                                0 comments.
+                            {% endif %}
+                        </p>
+                        <p class="card-text mb-auto">Posted by {{ story.by }}</p>
+                        <a href="{% url 'story_detail' story.id %}" class="stretched-link">Read</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No top stories to display.</p>
+        {% endfor %}
+
+    </div>
+
+    <hr>
+    <h1 class="display-4 fst-italic text-success text-center">-Latest Jobs-</h1>
+    <hr>
+
+    <div class="p-4 p-md-5 mb-4 text-white rounded bg-dark">
+        <div class="col-md-6 px-0">
+            <h1 class="display-4 fst-italic">{{ top_job.title }}</h1>
+            <p class="lead my-3 text-muted">{{ top_job.time }}</p>
+            <p class="lead my-3">Posted by {{ top_job.by }}.</p>
+            <p class="lead mb-0"><a href="{% url 'job_detail' top_job.id %}" class="text-white fw-bold">Read</a></p>
+        </div>
+    </div>
+
+    <div class="row mb-2">
+        {% for job in top_jobs %}
+            <div class="col-md-6">
+                <div class="row g-0 border rounded overflow-hidden flex-md-row mb-4 shadow-sm h-md-250 position-relative">
+                    <div class="col p-4 d-flex flex-column position-static">
+                        <strong class="d-inline-block mb-2 text-success">Job</strong>
+                        <h3 class="mb-0">{{ job.title }}</h3>
+                        <div class="mb-1 text-muted">{{ job.time }}</div>
+                        <p class="card-text mb-auto">Posted by {{ job.by }}</p>
+                        <a href="{% url 'job_detail' job.id %}" class="stretched-link">Read</a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>No top jobs to display.</p>
+        {% endfor %}
+
+    </div>
+
+{% endblock %}
