@@ -35,17 +35,11 @@ def sync_stories_task():
                                 score=response["score"],
                                 title=response["title"],
                                 url=response["url"])
-            # if "kids" in response and response["kids"]:
-            #     for kid_id in response["kids"]:
-            #         comment = views.fetch_or_get_comment(kid_id)
-            #         new_story.kids.add(comment)
-
             added_stories += 1
            
     print(f"Successfully added {added_stories} new stories to the database!")
 
     views.delete_old_stories(stories_list)
-    # views.delete_old_comments()
     views.update_stories()
 
 
