@@ -1,4 +1,5 @@
 {% extends "newsyapp/layout.html" %}
+{% load static %}
 
 {% block title %}
     Newsy! Jobs
@@ -8,20 +9,12 @@
 
     <h1 class="display-6 fst-italic text-success text-center">-Jobs-</h1>
     <hr>
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        {% for job in jobs %}
-            <div class="col">
-                <div class="h-100 p-5 text-white bg-dark rounded-3">
-                    <h4>{{ job.title }}</h4>
-                    <p>{{ job.time }}</p>
-                    <p>Posted by {{ job.by }}</p>
-                    <a href="{% url 'job_detail' job.id %}">
-                        <button class="btn btn-outline-light" type="button" >View job</button>
-                    </a>
-                </div>
-            </div>
 
-        {% endfor %}
+    <div id="jobs-area" class="row row-cols-1 row-cols-md-3 g-4">
     </div>
+
+    <input type="hidden" id="Url" data-url="{% url 'job_detail' '0000' %}" />
+
+    <script src="{% static 'newsyapp/js/jobs.js' %}"></script>
     
 {% endblock %}

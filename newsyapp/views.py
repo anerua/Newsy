@@ -66,12 +66,37 @@ def get_stories(request):
     return JsonResponse(response)
 
 
+def jobs(request):
+
+    return render(request, "newsyapp/jobs.html")
+
+
 def get_jobs(request):
 
     jobs = Job.objects.order_by('-time')
     start = int((request.GET.get("start") or 0))
+    quantity = int(request.GET.get("quantity") or QUANTITY)
 
-    return render(request, "newsyapp/jobs.html", {"jobs": jobs[start: start + QUANTITY]})
+    response = {}
+    response["start"] = start
+    response["quantity"] = quantity
+
+    data = []
+    for i in range(start, start + quantity):
+        job = jobs[i]
+        details = {
+            "id": job.id,
+            "by": job.by,
+            "time": job.time,
+            "text": job.text,
+            "title": job.title,
+            "url": job.url,
+        }
+        data.append(details)
+    
+    response["data"] = data
+
+    return JsonResponse(response)
 
 
 def get_story(request, item_id):

@@ -7,17 +7,17 @@ function load() {
     const start = counter;
     counter += quantity;
 
-    fetch(`/get_stories?start=${start}&quantity=${quantity}`)
+    fetch(`/api/get_stories?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
     .then(stories => {
         const stories_area = document.getElementById("stories-area");
         for (let i = 0; i < stories.data.length; i++) {
-            stories_area.append(createStory(stories.data[i]));
+            stories_area.append(spawnStory(stories.data[i]));
         }
     });
 }
 
-function createStory(story) {
+function spawnStory(story) {
     const col_div = document.createElement('div');
     col_div.classList.add("col");
 
