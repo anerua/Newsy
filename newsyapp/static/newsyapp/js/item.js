@@ -1,5 +1,9 @@
-
 document.addEventListener('DOMContentLoaded', () => {
+    getComments();
+});
+
+
+function getComments() {
 
     const descendants = parseInt(document.getElementById('descendants-data').textContent);
 
@@ -36,4 +40,4 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     }
-});
+}

@@ -1,4 +1,4 @@
-from django.http import HttpResponseNotFound
+from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 import http.client
 import json
@@ -11,6 +11,8 @@ MAX_JOB_ITEMS = 1000
 
 TOP_STORIES = 7
 TOP_JOBS = 7
+
+QUANTITY = 30
 
 def home(request):
 
@@ -30,18 +32,46 @@ def home(request):
     })
 
 
+def stories(request):
+
+    return render(request, "newsyapp/stories.html")
+
+
 def get_stories(request):
 
     stories = Story.objects.order_by('-time')
+    start = int(request.GET.get("start") or 0)
+    quantity = int(request.GET.get("quantity") or QUANTITY)
 
-    return render(request, "newsyapp/stories.html", {"stories": stories})
+    response = {}
+    response["start"] = start
+    response["quantity"] = quantity
+
+    data = []
+    for i in range(start, start + quantity):
+        story = stories[i]
+        details = {
+            "id": story.id,
+            "by": story.by,
+            "time": story.time,
+            "descendants": story.descendants,
+            "score": story.score,
+            "title": story.title,
+            "url": story.url,
+        }
+        data.append(details)
+    
+    response["data"] = data
+
+    return JsonResponse(response)
 
 
 def get_jobs(request):
 
     jobs = Job.objects.order_by('-time')
+    start = int((request.GET.get("start") or 0))
 
-    return render(request, "newsyapp/jobs.html", {"jobs": jobs})
+    return render(request, "newsyapp/jobs.html", {"jobs": jobs[start: start + QUANTITY]})
 
 
 def get_story(request, item_id):
