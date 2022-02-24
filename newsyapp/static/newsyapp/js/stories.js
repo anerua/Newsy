@@ -76,7 +76,7 @@ function getDocHeight() {
 }
 
 $(window).scroll(function() {
-    if($(window).scrollTop() + $(window).height() == getDocHeight()) {
+    if( $(window).scrollTop() >  $(document).height() - $(window).height() - 100) {
         load();
     }
  });

@@ -62,18 +62,17 @@ function spawnJob(job) {
 //     }
 // }
 
-function getDocHeight() {
-    var D = document;
-    return Math.max(
-        D.body.scrollHeight, D.documentElement.scrollHeight,
-        D.body.offsetHeight, D.documentElement.offsetHeight,
-        D.body.clientHeight, D.documentElement.clientHeight
-    );
-}
+// function getDocHeight() {
+//     var D = document;
+//     return Math.max(
+//         D.body.scrollHeight, D.documentElement.scrollHeight,
+//         D.body.offsetHeight, D.documentElement.offsetHeight,
+//         D.body.clientHeight, D.documentElement.clientHeight
+//     );
+// }
 
 $(window).scroll(function() {
-    if($(window).scrollTop() + $(window).height() == getDocHeight()) {
+    if( $(window).scrollTop() >  $(document).height() - $(window).height() - 100) {
         load();
     }
  });
-
