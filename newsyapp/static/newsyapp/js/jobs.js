@@ -1,9 +1,11 @@
 let counter = 0;
 const quantity = 30;
+let loading = false;
 
 document.addEventListener('DOMContentLoaded', load);
 
 function load() {
+    loading = true;
     const start = counter;
 
     fetch(`/api/get_jobs?start=${start}&quantity=${quantity}`)
@@ -23,6 +25,7 @@ function load() {
         }
 
     });
+    loading = false;
 }
 
 function spawnJob(job) {
@@ -64,15 +67,8 @@ function spawnJob(job) {
     return col_div;
 }
 
-// $(window).scroll(function() {
-//     if( $(window).scrollTop() ==  $(document).height() - $(window).height()) {
-//         load();
-//     }
-//  });
-
-window.onscroll = function(ev) {
-    let docHeight = window.innerHeight + window.pageYOffset;
-    if ((docHeight >= document.body.offsetHeight - 10) && (docHeight <= document.body.offsetHeight) ) {
-        load();
+window.onscroll = function() {
+    if (((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 10) && !loading) {
+            load();
     }
 };
