@@ -64,8 +64,14 @@ function spawnJob(job) {
     return col_div;
 }
 
-$(window).scroll(function() {
-    if( $(window).scrollTop() ==  $(document).height() - $(window).height()) {
+// $(window).scroll(function() {
+//     if( $(window).scrollTop() ==  $(document).height() - $(window).height()) {
+//         load();
+//     }
+//  });
+
+window.onscroll = function(ev) {
+    if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
         load();
     }
- });
+};
