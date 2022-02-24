@@ -73,7 +73,7 @@ function spawnStory(story) {
 //  });
 
 window.onscroll = function(ev) {
-    if ((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight) {
+    if ((window.innerHeight + window.pageYOffset) >= document.body.clientHeight) {
         load();
     }
 };
