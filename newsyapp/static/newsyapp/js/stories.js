@@ -5,14 +5,20 @@ document.addEventListener('DOMContentLoaded', load);
 
 function load() {
     const start = counter;
-    counter += quantity;
 
     fetch(`/api/get_stories?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
     .then(stories => {
-        const stories_area = document.getElementById("stories-area");
-        for (let i = 0; i < stories.data.length; i++) {
-            stories_area.append(spawnStory(stories.data[i]));
+        if (stories.data.length == 0) {
+            console.log("No more stories");
+        } else {
+
+            const stories_area = document.getElementById("stories-area");
+            for (let i = 0; i < stories.data.length; i++) {
+                stories_area.append(spawnStory(stories.data[i]));
+            }
+
+            counter += (stories.data.length < quantity) ? stories.data.length : quantity;
         }
     });
 }
@@ -60,23 +66,8 @@ function spawnStory(story) {
     return col_div;
 }
 
-// window.onscroll = () => {
-//     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-//         load();
-//     }
-// }
-
-function getDocHeight() {
-    var D = document;
-    return Math.max(
-        D.body.scrollHeight, D.documentElement.scrollHeight,
-        D.body.offsetHeight, D.documentElement.offsetHeight,
-        D.body.clientHeight, D.documentElement.clientHeight
-    );
-}
-
 $(window).scroll(function() {
-    if( $(window).scrollTop() >  $(document).height() - $(window).height() - 100) {
+    if( $(window).scrollTop() ==  $(document).height() - $(window).height()) {
         load();
     }
  });

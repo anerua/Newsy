@@ -5,15 +5,23 @@ document.addEventListener('DOMContentLoaded', load);
 
 function load() {
     const start = counter;
-    counter += quantity;
 
     fetch(`/api/get_jobs?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
     .then(jobs => {
-        const jobs_area = document.getElementById("jobs-area");
-        for (let i = 0; i < jobs.data.length; i++) {
-            jobs_area.append(spawnJob(jobs.data[i]));
+
+        if (jobs.data.length == 0) {
+            console.log("No more jobs");
+        } else {
+
+            counter += (jobs.data.length < quantity) ? jobs.data.length : quantity;
+            
+            const jobs_area = document.getElementById("jobs-area");
+            for (let i = 0; i < jobs.data.length; i++) {
+                jobs_area.append(spawnJob(jobs.data[i]));
+            }
         }
+
     });
 }
 
@@ -56,23 +64,8 @@ function spawnJob(job) {
     return col_div;
 }
 
-// window.onscroll = () => {
-//     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
-//         load();
-//     }
-// }
-
-// function getDocHeight() {
-//     var D = document;
-//     return Math.max(
-//         D.body.scrollHeight, D.documentElement.scrollHeight,
-//         D.body.offsetHeight, D.documentElement.offsetHeight,
-//         D.body.clientHeight, D.documentElement.clientHeight
-//     );
-// }
-
 $(window).scroll(function() {
-    if( $(window).scrollTop() >  $(document).height() - $(window).height() - 100) {
+    if( $(window).scrollTop() ==  $(document).height() - $(window).height()) {
         load();
     }
  });

@@ -47,8 +47,15 @@ def get_stories(request):
     response["start"] = start
     response["quantity"] = quantity
 
+    end = start + quantity
+    if start >= stories.count():
+        response["data"] = []
+        return JsonResponse(response)
+    elif start + quantity > stories.count():
+        end = stories.count()
+
     data = []
-    for i in range(start, start + quantity):
+    for i in range(start, end):
         story = stories[i]
         details = {
             "id": story.id,
@@ -81,8 +88,15 @@ def get_jobs(request):
     response["start"] = start
     response["quantity"] = quantity
 
+    end = start + quantity
+    if start >= jobs.count():
+        response["data"] = []
+        return JsonResponse(response)
+    elif start + quantity > jobs.count():
+        end = jobs.count()
+
     data = []
-    for i in range(start, start + quantity):
+    for i in range(start, end):
         job = jobs[i]
         details = {
             "id": job.id,
