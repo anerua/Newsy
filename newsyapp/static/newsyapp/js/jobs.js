@@ -71,7 +71,8 @@ function spawnJob(job) {
 //  });
 
 window.onscroll = function(ev) {
-    if ((window.innerHeight + window.pageYOffset) >= document.body.clientHeight) {
+    let docHeight = window.innerHeight + window.pageYOffset;
+    if ((docHeight >= document.body.offsetHeight - 10) && (docHeight <= document.body.offsetHeight) ) {
         load();
     }
 };
