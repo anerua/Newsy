@@ -56,8 +56,15 @@ function spawnJob(job) {
     return col_div;
 }
 
-window.onscroll = () => {
-    if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+// window.onscroll = () => {
+//     if (window.innerHeight + window.scrollY >= document.body.offsetHeight) {
+//         load();
+//     }
+// }
+
+$(window).scroll(function() {
+    if($(window).scrollTop() + $(window).height() == $(document).height()) {
         load();
     }
-}
+ });
+
