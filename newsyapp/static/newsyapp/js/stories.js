@@ -42,7 +42,8 @@ function spawnStory(story) {
     story_div.append(p1);
 
     const p2 = document.createElement('p');
-    p2.innerHTML = story.time;
+    p2.innerHTML = getElapsedTime(story.time);
+    p2.classList.add("text-muted");
     story_div.append(p2);
 
     const p3 = document.createElement('p');
@@ -60,13 +61,37 @@ function spawnStory(story) {
     a.appendChild(button);
 
     let url = document.getElementById("Url").dataset.url;
-    url = url.replace('0000', `${story.id}`)
+    url = url.replace('0000', `${story.id}`);
     a.href = url;
     story_div.append(a);
 
     col_div.append(story_div);
 
     return col_div;
+}
+
+function getElapsedTime(created_time) {
+    let elapsed_seconds = Math.floor(Date.now() / 1000) - created_time;
+    
+    if (elapsed_seconds < 60) {
+        return `${elapsed_seconds} s`;
+    } else if (elapsed_seconds < 3600) {
+        return `${Math.floor(elapsed_seconds / 60)} min`;
+    } else if (elapsed_seconds < 86400) {
+        return `${Math.floor(elapsed_seconds / 3600)} h`;
+    } else if (elapsed_seconds < 2592000) {
+        let elapsed_time = Math.floor(elapsed_seconds / 86400);
+        let adj = (elapsed_time > 1) ? " days" : " day";
+        return elapsed_time + adj;
+    } else if (elapsed_seconds < 31104000) {
+        let elapsed_time = Math.floor(elapsed_seconds / 2592000);
+        let adj = (elapsed_time > 1) ? " months" : " month";
+        return elapsed_time + adj;
+    } else {
+        let elapsed_time = Math.floor(elapsed_seconds / 31104000);
+        let adj = (elapsed_time > 1) ? " years" : " year";
+        return elapsed_time + adj;
+    }
 }
 
 window.onscroll = function() {
