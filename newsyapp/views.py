@@ -1,7 +1,7 @@
 from django.http import HttpResponseNotFound, JsonResponse
 from django.shortcuts import render
 import http.client
-import json
+import json, time
 
 from .models import Story, Job
 
@@ -16,7 +16,8 @@ QUANTITY = 30
 
 def home(request):
 
-    stories = Story.objects.order_by('-score')
+    yesterday_time = int(time.time()) - 86400
+    stories = Story.objects.filter(time__gte=yesterday_time).order_by("-score")
     top_story = stories[0]
     top_stories = stories[1:TOP_STORIES]
 
