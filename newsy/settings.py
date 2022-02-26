@@ -206,7 +206,7 @@ LOGGING = {
         'syslog':{
             'level':'INFO',
             'class': 'logging.handlers.SysLogHandler',
-            'facility': SysLogHandler.LOG_LOCAL2,
+            'facility': 'SysLogHandler.LOG_LOCAL2',
             'address': '/dev/log',
             'formatter': 'verbose',
         },
