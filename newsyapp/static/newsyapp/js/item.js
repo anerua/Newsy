@@ -26,9 +26,9 @@ function getComments() {
                 div.append(hr);
                 comments_area.append(div);
             });
+            document.getElementById("loading-symbol").style.display = "none";
         });
-        document.getElementById("loading-symbol").style.display = "none";
-        
+
     } else {
         comments_area.append("No comments.");
     }
