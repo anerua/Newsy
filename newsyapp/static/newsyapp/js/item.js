@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById("loading-symbol").style.display = "none";
     const commentTimeP = document.getElementById('comment-time-p');
     commentTimeP.innerHTML = getElapsedTime(commentTimeP.dataset.time);
     getComments();
@@ -11,6 +12,8 @@ function getComments() {
 
     const comments_area = document.getElementById('comments-area');
     if (descendants) {
+        document.getElementById("loading-symbol").style.display = "block";
+
         const item_id = parseInt(document.getElementById('id-data').textContent);
         fetch(`https://hacker-news.firebaseio.com/v0/item/${item_id}.json?print=pretty`)
         .then(response => response.json())
@@ -24,6 +27,8 @@ function getComments() {
                 comments_area.append(div);
             });
         });
+        document.getElementById("loading-symbol").style.display = "none";
+        
     } else {
         comments_area.append("No comments.");
     }
