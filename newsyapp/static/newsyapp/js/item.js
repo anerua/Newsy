@@ -17,28 +17,8 @@ function getComments() {
             const item_kids = data.kids;
             item_kids.forEach(kid => {
                 const div = create_conversation(kid, 0);
-
-                // fetch(`https://hacker-news.firebaseio.com/v0/item/${kid}.json?print=pretty`)
-                // .then(response => response.json())
-                // .then(comment => {
-
-                //     if (comment.text) {
-                //         const div = document.createElement('div');
-                //         div.append(`${comment.by} | ${comment.time}`);
-
-                //         const p1 = document.createElement('p');
-                //         p1.innerHTML = comment.text;
-                //         p1.classList.add("text-success");
-                //         div.append(p1);
-
-                //         const hr = document.createElement('hr');
-                //         div.append(hr);
-
-                //         comments_area.append(div);
-                //     }
-
-                   
-                // });
+                const hr = document.createElement('hr');
+                div.append(hr);
                 comments_area.append(div);
             });
         });
@@ -52,7 +32,7 @@ function create_conversation(kid, level) {
     .then(response => response.json())
     .then(comment => {
 
-        div.style.marginLeft = `${level * 10}%`;
+        div.style.marginLeft = `${level * 5}%`;
         if (comment.text) {
             div.append(`${comment.by} | ${comment.time}`);
 
@@ -68,11 +48,7 @@ function create_conversation(kid, level) {
                     div.append(create_conversation(kid, level + 1));
                 });
             }
-
-            const hr = document.createElement('hr');
-            div.append(hr);
         }
-
     });
     return div;
 }
