@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', load);
 function load() {
     loading = true;
     const start = counter;
-    
+
     if (!completed) {
         document.getElementById("loading-symbol").style.display = "block";
     }
@@ -32,6 +32,7 @@ function load() {
         loading = false;
     });
 }
+
 
 function spawnJob(job) {
     const col_div = document.createElement('div');
