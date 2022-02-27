@@ -61,7 +61,7 @@ function create_conversation(kid, level) {
             p1.classList.add("text-success");
             div.append(p1);
 
-            if (comment.kids) {
+            if (("kids" in comment) && comment.kids.length) {
                 const comment_kids = comment.kids;
                 comment_kids.forEach(kid => {
                     div.append(create_conversation(kid, ++level));
@@ -71,6 +71,7 @@ function create_conversation(kid, level) {
             const hr = document.createElement('hr');
             div.append(hr);
         }
+
         return div;
     });
 }
