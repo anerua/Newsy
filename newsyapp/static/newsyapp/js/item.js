@@ -10,33 +10,33 @@ function getComments() {
 
     const descendants = parseInt(document.getElementById('descendants-data').textContent);
 
-    const comments_area = document.getElementById('comments-area');
+    const commentsArea = document.getElementById('comments-area');
     if (descendants) {
         document.getElementById("loading-symbol").style.display = "block";
 
-        const item_id = parseInt(document.getElementById('id-data').textContent);
-        fetch(`https://hacker-news.firebaseio.com/v0/item/${item_id}.json?print=pretty`)
+        const itemID = parseInt(document.getElementById('id-data').textContent);
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${itemID}.json?print=pretty`)
         .then(response => response.json())
         .then(data => {
 
-            const item_kids = data.kids;
-            item_kids.forEach(kid => {
-                const div = create_conversation(kid, 0);
+            const itemKids = data.kids;
+            itemKids.forEach(kid => {
+                const div = createConversation(kid, 0);
                 const hr = document.createElement('hr');
                 div.append(hr);
-                comments_area.append(div);
+                commentsArea.append(div);
             });
             document.getElementById("loading-symbol").style.display = "none";
         });
 
     } else {
-        comments_area.append("No comments.");
+        commentsArea.append("No comments.");
     }
 
 }
 
 
-function create_conversation(kid, level) {
+function createConversation(kid, level) {
     const div = document.createElement('div');
     fetch(`https://hacker-news.firebaseio.com/v0/item/${kid}.json?print=pretty`)
     .then(response => response.json())
@@ -54,10 +54,9 @@ function create_conversation(kid, level) {
             div.append(p1);
 
             if (("kids" in comment) && comment.kids.length) {
-                console.log(`These: ${comment.kids}`)
-                const comment_kids = comment.kids;
-                comment_kids.forEach(kid => {
-                    div.append(create_conversation(kid, level + 1));
+                const commentKids = comment.kids;
+                commentKids.forEach(kid => {
+                    div.append(createConversation(kid, level + 1));
                 });
             }
         }
@@ -66,26 +65,26 @@ function create_conversation(kid, level) {
 }
 
 
-function getElapsedTime(created_time) {
-    let elapsed_seconds = Math.floor(Date.now() / 1000) - created_time;
+function getElapsedTime(createdTime) {
+    let elapsedSeconds = Math.floor(Date.now() / 1000) - createdTime;
     
-    if (elapsed_seconds < 60) {
-        return `${elapsed_seconds} s`;
-    } else if (elapsed_seconds < 3600) {
-        return `${Math.floor(elapsed_seconds / 60)} min`;
-    } else if (elapsed_seconds < 86400) {
-        return `${Math.floor(elapsed_seconds / 3600)} h`;
-    } else if (elapsed_seconds < 2592000) {
-        let elapsed_time = Math.floor(elapsed_seconds / 86400);
-        let adj = (elapsed_time > 1) ? " days" : " day";
-        return elapsed_time + adj;
-    } else if (elapsed_seconds < 31104000) {
-        let elapsed_time = Math.floor(elapsed_seconds / 2592000);
-        let adj = (elapsed_time > 1) ? " months" : " month";
-        return elapsed_time + adj;
+    if (elapsedSeconds < 60) {
+        return `${elapsedSeconds} s`;
+    } else if (elapsedSeconds < 3600) {
+        return `${Math.floor(elapsedSeconds / 60)} min`;
+    } else if (elapsedSeconds < 86400) {
+        return `${Math.floor(elapsedSeconds / 3600)} h`;
+    } else if (elapsedSeconds < 2592000) {
+        let elapsedTime = Math.floor(elapsedSeconds / 86400);
+        let adj = (elapsedTime > 1) ? " days" : " day";
+        return elapsedTime + adj;
+    } else if (elapsedSeconds < 31104000) {
+        let elapsedTime = Math.floor(elapsedSeconds / 2592000);
+        let adj = (elapsedTime > 1) ? " months" : " month";
+        return elapsedTime + adj;
     } else {
-        let elapsed_time = Math.floor(elapsed_seconds / 31104000);
-        let adj = (elapsed_time > 1) ? " years" : " year";
-        return elapsed_time + adj;
+        let elapsedTime = Math.floor(elapsedSeconds / 31104000);
+        let adj = (elapsedTime > 1) ? " years" : " year";
+        return elapsedTime + adj;
     }
 }
