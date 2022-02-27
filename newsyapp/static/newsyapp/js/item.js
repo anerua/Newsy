@@ -65,7 +65,7 @@ function create_conversation(kid, level) {
                 console.log(`These: ${comment.kids}`)
                 const comment_kids = comment.kids;
                 comment_kids.forEach(kid => {
-                    div.append(create_conversation(kid, ++level));
+                    div.append(create_conversation(kid, level + 1));
                 });
             }
 
