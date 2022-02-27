@@ -36,11 +36,13 @@ function create_conversation(kid, level) {
 
         div.style.marginLeft = `${level * 2}%`;
         if (comment.text) {
-            div.append(`${comment.by} | ${getElapsedTime(comment.time)}`);
+            const p0 = document.createElement('p');
+            p0.classList.add("text-muted");
+            p0.innerHTML = `${comment.by} | ${getElapsedTime(comment.time)}`
+            div.append(p0);
 
             const p1 = document.createElement('p');
             p1.innerHTML = comment.text;
-            p1.classList.add("text-success");
             div.append(p1);
 
             if (("kids" in comment) && comment.kids.length) {
