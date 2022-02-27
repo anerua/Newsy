@@ -32,7 +32,7 @@ function create_conversation(kid, level) {
     .then(response => response.json())
     .then(comment => {
 
-        div.style.marginLeft = `${level}%`;
+        div.style.marginLeft = `${level * 2}%`;
         if (comment.text) {
             div.append(`${comment.by} | ${comment.time}`);
 
