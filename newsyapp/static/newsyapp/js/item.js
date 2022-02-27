@@ -9,8 +9,8 @@ function getComments() {
 
     const descendants = parseInt(document.getElementById('descendants-data').textContent);
 
+    const comments_area = document.getElementById('comments-area');
     if (descendants) {
-        const comments_area = document.getElementById('comments-area');
         const item_id = parseInt(document.getElementById('id-data').textContent);
         fetch(`https://hacker-news.firebaseio.com/v0/item/${item_id}.json?print=pretty`)
         .then(response => response.json())
@@ -24,7 +24,10 @@ function getComments() {
                 comments_area.append(div);
             });
         });
+    } else {
+        comments_area.append("No comments.");
     }
+
 }
 
 
