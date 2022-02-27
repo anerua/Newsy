@@ -1,13 +1,14 @@
 let counter = 0;
 const quantity = 30;
 let loading = false;
-let completed = true;
+let completed = false;
 
 document.addEventListener('DOMContentLoaded', load);
 
 function load() {
     loading = true;
     const start = counter;
+    
     if (!completed) {
         document.getElementById("loading-symbol").style.display = "block";
     }
