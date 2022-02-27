@@ -17,11 +17,16 @@
         <iframe class="embed-responsive-item" src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" width="500px" height="500px"></iframe>
     </div> {% endcomment %}
 
-    {% if item.by %}
-        Posted by {{ item.by }}. {{ item.time }}
-    {% else %}
-        Anonymous. {{ item.time }}
-    {% endif %}
+    <p id="comment-time-p" class="text-muted" data-time="{{ item.time }}">
+
+    </p>
+    <p>
+        {% if item.by %}
+            Posted by {{ item.by }}.
+        {% else %}
+            Anonymous.
+        {% endif %}
+    </p>
 
     {% if item.url %}
         <h4>Details: <a href="{{ item.url }}", target="blank">{{ item.url }}</a></h4>

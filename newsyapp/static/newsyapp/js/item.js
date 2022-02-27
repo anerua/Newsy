@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const commentTimeP = document.getElementById('comment-time-p');
+    commentTimeP.innerHTML = getElapsedTime(commentTimeP.dataset.time);
     getComments();
 });
 
