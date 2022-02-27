@@ -7,13 +7,13 @@ document.addEventListener('DOMContentLoaded', load);
 function load() {
     loading = true;
     const start = counter;
+    document.getElementById("loading-symbol").style.display = "block";
 
     fetch(`/api/get_stories?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
     .then(stories => {
-        if (stories.data.length == 0) {
-            console.log("No more stories");
-        } else {
+        
+        if (stories.data.length != 0) {
 
             const stories_area = document.getElementById("stories-area");
             for (let i = 0; i < stories.data.length; i++) {
@@ -22,9 +22,11 @@ function load() {
 
             counter += (stories.data.length < quantity) ? stories.data.length : quantity;
         }
+        document.getElementById("loading-symbol").style.display = "none";
+        loading = false;
     });
-    loading = false;
 }
+
 
 function spawnStory(story) {
     const col_div = document.createElement('div');
@@ -71,6 +73,7 @@ function spawnStory(story) {
     return col_div;
 }
 
+
 function getElapsedTime(created_time) {
     let elapsed_seconds = Math.floor(Date.now() / 1000) - created_time;
     
@@ -94,6 +97,7 @@ function getElapsedTime(created_time) {
         return elapsed_time + adj;
     }
 }
+
 
 window.onscroll = function() {
     if (((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 10) && !loading) {

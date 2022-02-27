@@ -13,6 +13,12 @@
     <div id="jobs-area" class="row row-cols-1 row-cols-md-3 g-4">
     </div>
 
+    <div id="loading-symbol" class="text-center">
+        <div class="spinner-grow" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+
     <input type="hidden" id="Url" data-url="{% url 'job_detail' '0000' %}" />
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

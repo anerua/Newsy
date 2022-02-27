@@ -7,14 +7,13 @@ document.addEventListener('DOMContentLoaded', load);
 function load() {
     loading = true;
     const start = counter;
+    document.getElementById("loading-symbol").style.display = "block";
 
     fetch(`/api/get_jobs?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
     .then(jobs => {
 
-        if (jobs.data.length == 0) {
-            console.log("No more jobs");
-        } else {
+        if (jobs.data.length != 0) {
 
             counter += (jobs.data.length < quantity) ? jobs.data.length : quantity;
             
@@ -23,9 +22,9 @@ function load() {
                 jobs_area.append(spawnJob(jobs.data[i]));
             }
         }
-
+        document.getElementById("loading-symbol").style.display = "none";
+        loading = false;
     });
-    loading = false;
 }
 
 function spawnJob(job) {
@@ -68,6 +67,7 @@ function spawnJob(job) {
     return col_div;
 }
 
+
 function getElapsedTime(created_time) {
     let elapsed_seconds = Math.floor(Date.now() / 1000) - created_time;
     
@@ -91,6 +91,7 @@ function getElapsedTime(created_time) {
         return elapsed_time + adj;
     }
 }
+
 
 window.onscroll = function() {
     if (((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 10) && !loading) {
