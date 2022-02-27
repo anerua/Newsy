@@ -47,11 +47,11 @@ function getComments() {
 
 
 function create_conversation(kid, level) {
+    const div = document.createElement('div');
     fetch(`https://hacker-news.firebaseio.com/v0/item/${kid}.json?print=pretty`)
     .then(response => response.json())
     .then(comment => {
 
-        const div = document.createElement('div');
         div.style.marginLeft = `${level * 10}%`;
         if (comment.text) {
             div.append(`${comment.by} | ${comment.time}`);
@@ -62,6 +62,7 @@ function create_conversation(kid, level) {
             div.append(p1);
 
             if (("kids" in comment) && comment.kids.length) {
+                console.log(`These: ${comment.kids}`)
                 const comment_kids = comment.kids;
                 comment_kids.forEach(kid => {
                     div.append(create_conversation(kid, ++level));
@@ -72,6 +73,6 @@ function create_conversation(kid, level) {
             div.append(hr);
         }
 
-        return div;
     });
+    return div;
 }
