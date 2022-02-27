@@ -1,18 +1,22 @@
 let counter = 0;
 const quantity = 30;
 let loading = false;
+let completed = false;
 
 document.addEventListener('DOMContentLoaded', load);
 
 function load() {
     loading = true;
     const start = counter;
-    document.getElementById("loading-symbol").style.display = "block";
+
+    if (!completed) {
+        document.getElementById("loading-symbol").style.display = "block";
+    }
 
     fetch(`/api/get_stories?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
     .then(stories => {
-        
+
         if (stories.data.length != 0) {
 
             const stories_area = document.getElementById("stories-area");
@@ -21,6 +25,8 @@ function load() {
             }
 
             counter += (stories.data.length < quantity) ? stories.data.length : quantity;
+        } else {
+            completed = true;
         }
         document.getElementById("loading-symbol").style.display = "none";
         loading = false;

@@ -1,13 +1,16 @@
 let counter = 0;
 const quantity = 30;
 let loading = false;
+let completed = true;
 
 document.addEventListener('DOMContentLoaded', load);
 
 function load() {
     loading = true;
     const start = counter;
-    document.getElementById("loading-symbol").style.display = "block";
+    if (!completed) {
+        document.getElementById("loading-symbol").style.display = "block";
+    }
 
     fetch(`/api/get_jobs?start=${start}&quantity=${quantity}`)
     .then(response => response.json())
@@ -21,6 +24,8 @@ function load() {
             for (let i = 0; i < jobs.data.length; i++) {
                 jobs_area.append(spawnJob(jobs.data[i]));
             }
+        } else {
+            completed = true;
         }
         document.getElementById("loading-symbol").style.display = "none";
         loading = false;
