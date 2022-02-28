@@ -2,8 +2,13 @@ let counter = 0;
 const quantity = 30;
 let loading = false;
 let completed = false;
+var myBtn;
 
-document.addEventListener('DOMContentLoaded', load);
+document.addEventListener('DOMContentLoaded', () => {
+    myBtn = document.getElementById("btn-back-to-top");
+    myBtn.addEventListener("click", backToTop);
+    load();
+});
 
 
 function load() {
@@ -103,6 +108,22 @@ function getElapsedTime(createdTime) {
 
 window.onscroll = function() {
     if (((window.innerHeight + window.pageYOffset) >= document.body.offsetHeight - 10) && !loading) {
-            load();
+        load();
     }
+    toggleTopBtn();
 };
+
+
+function toggleTopBtn() {
+    if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+      myBtn.style.display = "block";
+    } else {
+      myBtn.style.display = "none";
+    }
+}
+  
+  
+function backToTop() {
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+ }
